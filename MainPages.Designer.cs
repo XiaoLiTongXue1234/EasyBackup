@@ -57,10 +57,10 @@
             backupManagerStatusLabel = new Label();
             backupManagerProcessLable = new Label();
             label3 = new Label();
-            progressBar1 = new ProgressBar();
+            backupManagerProgressBar = new ProgressBar();
             label4 = new Label();
-            button1 = new Button();
-            button2 = new Button();
+            deleteSelectedBackupButton = new Button();
+            recoverySelectedBackupButton = new Button();
             backupsListBox = new ListBox();
             backupManagerLabel0 = new Label();
             backupManagerButton = new Button();
@@ -336,10 +336,10 @@
             backupManagerPanel.Controls.Add(backupManagerStatusLabel);
             backupManagerPanel.Controls.Add(backupManagerProcessLable);
             backupManagerPanel.Controls.Add(label3);
-            backupManagerPanel.Controls.Add(progressBar1);
+            backupManagerPanel.Controls.Add(backupManagerProgressBar);
             backupManagerPanel.Controls.Add(label4);
-            backupManagerPanel.Controls.Add(button1);
-            backupManagerPanel.Controls.Add(button2);
+            backupManagerPanel.Controls.Add(deleteSelectedBackupButton);
+            backupManagerPanel.Controls.Add(recoverySelectedBackupButton);
             backupManagerPanel.Controls.Add(backupsListBox);
             backupManagerPanel.Controls.Add(backupManagerLabel0);
             backupManagerPanel.Location = new Point(100, 10);
@@ -378,12 +378,12 @@
             label3.Text = "完成";
             label3.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // progressBar1
+            // backupManagerProgressBar
             // 
-            progressBar1.Location = new Point(15, 382);
-            progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(660, 20);
-            progressBar1.TabIndex = 11;
+            backupManagerProgressBar.Location = new Point(15, 382);
+            backupManagerProgressBar.Name = "backupManagerProgressBar";
+            backupManagerProgressBar.Size = new Size(660, 20);
+            backupManagerProgressBar.TabIndex = 11;
             // 
             // label4
             // 
@@ -395,25 +395,27 @@
             label4.TabIndex = 10;
             label4.Text = "备份列表";
             // 
-            // button1
+            // deleteSelectedBackupButton
             // 
-            button1.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 134);
-            button1.Location = new Point(124, 338);
-            button1.Name = "button1";
-            button1.Size = new Size(103, 38);
-            button1.TabIndex = 9;
-            button1.Text = "删除所选项";
-            button1.UseVisualStyleBackColor = true;
+            deleteSelectedBackupButton.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            deleteSelectedBackupButton.Location = new Point(124, 338);
+            deleteSelectedBackupButton.Name = "deleteSelectedBackupButton";
+            deleteSelectedBackupButton.Size = new Size(103, 38);
+            deleteSelectedBackupButton.TabIndex = 9;
+            deleteSelectedBackupButton.Text = "删除所选项";
+            deleteSelectedBackupButton.UseVisualStyleBackColor = true;
+            deleteSelectedBackupButton.Click += deleteSelectedBackupButton_Click;
             // 
-            // button2
+            // recoverySelectedBackupButton
             // 
-            button2.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 134);
-            button2.Location = new Point(15, 338);
-            button2.Name = "button2";
-            button2.Size = new Size(103, 38);
-            button2.TabIndex = 8;
-            button2.Text = "恢复所选项";
-            button2.UseVisualStyleBackColor = true;
+            recoverySelectedBackupButton.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            recoverySelectedBackupButton.Location = new Point(15, 338);
+            recoverySelectedBackupButton.Name = "recoverySelectedBackupButton";
+            recoverySelectedBackupButton.Size = new Size(103, 38);
+            recoverySelectedBackupButton.TabIndex = 8;
+            recoverySelectedBackupButton.Text = "恢复所选项";
+            recoverySelectedBackupButton.UseVisualStyleBackColor = true;
+            recoverySelectedBackupButton.Click += recoverySelectedBackupButton_Click;
             // 
             // backupsListBox
             // 
@@ -502,13 +504,13 @@
         private Panel backupManagerPanel;
         private Label backupManagerProcessLable;
         private Label label3;
-        private ProgressBar progressBar1;
+        private ProgressBar backupManagerProgressBar;
         private Label label4;
-        private Button button1;
+        private Button deleteSelectedBackupButton;
         private ListBox backupsListBox;
         private Label backupManagerLabel0;
         private Button backupManagerButton;
-        private Button button2;
+        private Button recoverySelectedBackupButton;
         private Label backupManagerStatusLabel;
     }
 }

@@ -11,11 +11,9 @@ namespace EasyBackup
         {
             this.configManager = new ConfigManager(configFilePath);
             this.backupConfigManager = new BackupConfigManager(backupConfigFilePath);
-            this.backupStorageConfigManager = new BackupStorageConfigManager(backupConfigFilePath);
-        }
-        public void Reset_BackupStorageConfigFile()
-        {
 
+            string backupStorageConfigFilePath = this.configManager.config.backupStoragePath + "\\backupStorage.config.json";
+            this.backupStorageConfigManager = new BackupStorageConfigManager(backupStorageConfigFilePath);
         }
         public bool Backup_SelectedItem(int index)
         {
@@ -27,10 +25,12 @@ namespace EasyBackup
         {
             string currentDir = Directory.GetCurrentDirectory();
 
-            string time = DateTime.Now.ToString("yyyy-MM-dd HH_mm_ss");
+            string time = DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss");
             Directory.SetCurrentDirectory(this.configManager.config.backupStoragePath);
             Directory.CreateDirectory(time);
             Directory.SetCurrentDirectory(this.configManager.config.backupStoragePath + "\\" + time);
+
+            this.backupStorageConfigManager.Add_Backup(time);
 
             string path;
             if (item.StartsWith("file: "))
@@ -38,7 +38,7 @@ namespace EasyBackup
                 path = item.Substring(6);
                 if (File.Exists(path))
                 {
-                    this.Backup_File(path);
+                    this.Backup_File(time, path);
                 }
                 else
                 {
@@ -50,7 +50,7 @@ namespace EasyBackup
                 path = item.Substring(5);
                 if (Directory.Exists(path))
                 {
-                    this.Backup_Dir(path);
+                    this.Backup_Dir(time, path);
                 }
                 else
                 {
@@ -65,19 +65,21 @@ namespace EasyBackup
 
             Directory.SetCurrentDirectory(currentDir);
         }
-        private void Backup_File(string path)
+        private void Backup_File(string time, string path)
         {
             string currentDir = Directory.GetCurrentDirectory();
 
-            string rootDir = path.Substring(0, 1);
+            string rootDir = path[..1];
             Directory.CreateDirectory(rootDir);
             Directory.SetCurrentDirectory(rootDir);
             string? tempDirName = Path.GetDirectoryName(path);
             if (tempDirName != null)
             {
-                string dir = tempDirName.Substring(3);
+                string dir = tempDirName[3..];
                 Directory.CreateDirectory(dir);
                 File.Copy(path, dir + "\\" + Path.GetFileName(path));
+
+                this.backupStorageConfigManager.Add_File(time, path);
             }
             else
             {
@@ -86,20 +88,26 @@ namespace EasyBackup
 
             Directory.SetCurrentDirectory(currentDir);
         }
-        private void Backup_Dir(string path)
+        private void Backup_Dir(string time, string path)
         {
             string currentDir = Directory.GetCurrentDirectory();
 
             foreach (string file in Directory.GetFiles(path))
             {
-                this.Backup_File(file);
+                this.Backup_File(time, file);
             }
             foreach (string dir in Directory.GetDirectories(path))
             {
-                this.Backup_Dir(dir);
+                this.Backup_Dir(time, dir);
             }
 
             Directory.SetCurrentDirectory(currentDir);
+        }
+        public void Recovery_File(string itemName,string file)
+        {
+            string rootDir = file[..1];
+            string path = file[3..];
+            File.Copy(this.configManager.config.backupStoragePath + "\\" + itemName + "\\" + rootDir + "\\" + path, file);
         }
     }
     public class BackupConfigManager : ConfigManagerInterface
@@ -137,7 +145,7 @@ namespace EasyBackup
 
         public void Create_ConfigFile()
         {
-            if (!Directory.Exists(configFilePath))
+            if (!Directory.Exists(this.configFilePath))
             {
                 string? directory = Path.GetDirectoryName(this.configFilePath);
                 if (directory != null)
@@ -190,31 +198,85 @@ namespace EasyBackup
     }
     public class BackupStorageConfigManager : ConfigManagerInterface
     {
-        private string configFilePath;
+        private readonly string configFilePath;
         public BackupStorageConfig backupStorageConfig;
         public BackupStorageConfigManager(string configFilePath)
         {
             this.configFilePath = configFilePath;
             this.backupStorageConfig = new BackupStorageConfig();
+
+            this.Load_ConfigFile();
+            this.Check_And_Init_Config();
         }
         public void Check_And_Init_Config()
         {
+            this.Update_ConfigFile();
         }
 
         public void Create_ConfigFile()
         {
+            if (!Directory.Exists(this.configFilePath))
+            {
+                string? directory = Path.GetDirectoryName(this.configFilePath);
+                if (directory != null)
+                {
+                    Directory.CreateDirectory(directory);
+                }
+            }
+            this.Reset_ConfigFile();
+            this.Check_And_Init_Config();
         }
 
         public void Load_ConfigFile()
         {
+            if (!File.Exists(this.configFilePath))
+            {
+                this.Create_ConfigFile();
+            }
+            string json = File.ReadAllText(this.configFilePath);
+            BackupStorageConfig? tempConfig = JsonConvert.DeserializeObject<BackupStorageConfig>(json);
+            if (tempConfig != null)
+                this.backupStorageConfig = tempConfig;
         }
 
         public void Reset_ConfigFile()
         {
+            File.WriteAllText(this.configFilePath,
+                "{" +
+                "\"backups\": {}" +
+                "}");
+            this.Load_ConfigFile();
         }
 
         public void Update_ConfigFile()
         {
+            File.WriteAllText(this.configFilePath, JsonConvert.SerializeObject(this.backupStorageConfig));
+        }
+        public void Add_Backup(string time)
+        {
+            this.backupStorageConfig.backups.Add(time, []);
+
+            this.Update_ConfigFile();
+        }
+        public void Add_File(string time, string file)
+        {
+            this.backupStorageConfig.backups[time].Add(file);
+
+            this.Update_ConfigFile();
+        }
+        public void Add_Files(string time, List<string> files)
+        {
+            foreach (string file in files)
+            {
+                string? tempDirName = Path.GetDirectoryName(file);
+                if (tempDirName != null && !Directory.Exists(tempDirName))
+                {
+                    Directory.CreateDirectory(tempDirName);
+                }
+                this.backupStorageConfig.backups[time].Add(file);
+            }
+
+            this.Update_ConfigFile();
         }
     }
     public class BackupConfig
