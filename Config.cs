@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.IO;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace EasyBackup
 {
     public interface ConfigManagerInterface
@@ -11,21 +9,15 @@ namespace EasyBackup
         void Reset_ConfigFile();
         void Check_And_Init_Config();
     }
-    public class Config
-    {
-        public string backupStoragePath { get; set; }
-        public Config()
-        {
-            backupStoragePath = "";
-        }
-    }
     public class ConfigManager : ConfigManagerInterface
     {
-        private string configFilePath;
-        public Config config = new Config();
+        private readonly string configFilePath;
+        public Config config;
         public ConfigManager(string configFilePath)
         {
             this.configFilePath = configFilePath;
+            this.config = new Config();
+
             this.Load_ConfigFile();
             this.Check_And_Init_Config();
         }
@@ -84,6 +76,14 @@ namespace EasyBackup
         {
             this.config.backupStoragePath = str;
             this.Update_ConfigFile();
+        }
+    }
+    public class Config
+    {
+        public string backupStoragePath { get; set; }
+        public Config()
+        {
+            backupStoragePath = "";
         }
     }
 }

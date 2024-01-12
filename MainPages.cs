@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.IO;
 
 namespace EasyBackup
 {
@@ -13,37 +13,65 @@ namespace EasyBackup
         private void EasyBackup_Load(object sender, EventArgs e)
         {
             this.homePanel.Visible = true;
+            this.backupManagerPanel.Visible = false;
             this.settingsPanel.Visible = false;
             this.othersPanel.Visible = false;
 
+            this.Reload_UI();
+        }
+        private void Reload_UI()
+        {
             this.Reload_Config();
+
+            this.Reload_backupFilesListBox();
+            this.Reload_backupsListBox();
         }
         private void Reload_Config()
         {
             this.textBox1.Text = this.backupManager.configManager.config.backupStoragePath;
-
+        }
+        private void Reload_backupFilesListBox()
+        {
             this.backupFilesListBox.Items.Clear();
             foreach (string item in this.backupManager.backupConfigManager.backupConfig.files)
             {
                 backupFilesListBox.Items.Add(item);
             }
         }
+        private void Reload_backupsListBox()
+        {
+            this.backupsListBox.Items.Clear();
+            foreach (string item in Directory.GetDirectories(this.backupManager.configManager.config.backupStoragePath))
+            {
+                backupsListBox.Items.Add(item);
+            }
+        }
         private void home_Click(object sender, EventArgs e)
         {
             this.homePanel.Visible = true;
+            this.backupManagerPanel.Visible = false;
             this.settingsPanel.Visible = false;
             this.othersPanel.Visible = false;
         }
 
+        private void backupManagerButton_Click(object sender, EventArgs e)
+        {
+            this.homePanel.Visible = false;
+            this.backupManagerPanel.Visible = true;
+            this.settingsPanel.Visible = false;
+            this.othersPanel.Visible = false;
+        }
         private void settings_Click(object sender, EventArgs e)
         {
             this.homePanel.Visible = false;
+            this.backupManagerPanel.Visible = false;
             this.settingsPanel.Visible = true;
             this.othersPanel.Visible = false;
         }
         private void others_Click(object sender, EventArgs e)
         {
             this.homePanel.Visible = false;
+            this.backupManagerPanel.Visible = false;
             this.settingsPanel.Visible = false;
             this.othersPanel.Visible = true;
         }
@@ -96,7 +124,7 @@ namespace EasyBackup
                 }
             }
 
-            this.Reload_Config();
+            this.Reload_backupFilesListBox();
         }
 
         private void addDirButton_Click(object sender, EventArgs e)
@@ -107,7 +135,7 @@ namespace EasyBackup
                 this.backupManager.backupConfigManager.Add_Dir(folderBrowserDialog.SelectedPath);
             }
 
-            this.Reload_Config();
+            this.Reload_backupFilesListBox();
         }
 
         private void deleteSelectedItemButton_Click(object sender, EventArgs e)
@@ -115,7 +143,7 @@ namespace EasyBackup
             if (this.backupFilesListBox.SelectedIndex != -1)
             {
                 this.backupManager.backupConfigManager.Delete_Item(this.backupFilesListBox.SelectedIndex);
-                this.Reload_Config();
+                this.Reload_backupFilesListBox();
             }
             else
             {
@@ -160,7 +188,7 @@ namespace EasyBackup
                 this.homeStatusLabel.Text = "完成";
                 MessageBox.Show("备份成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
+            this.Reload_backupsListBox();
         }
 
         private void backupSelectedItemButton_Click(object sender, EventArgs e)

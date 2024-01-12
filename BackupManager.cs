@@ -1,27 +1,116 @@
 ﻿using Newtonsoft.Json;
-using System.Collections;
-using System.Globalization;
-using System.IO;
-using System.Windows.Forms;
-using static System.Windows.Forms.DataFormats;
 
 namespace EasyBackup
 {
-    public class BackupConfig
+    public class BackupManager
     {
-        public List<string> files { get; set; }
-        public BackupConfig()
+        public ConfigManager configManager;
+        public BackupConfigManager backupConfigManager;
+        public BackupStorageConfigManager backupStorageConfigManager;
+        public BackupManager(string configFilePath, string backupConfigFilePath)
         {
-            this.files = [];
+            this.configManager = new ConfigManager(configFilePath);
+            this.backupConfigManager = new BackupConfigManager(backupConfigFilePath);
+            this.backupStorageConfigManager = new BackupStorageConfigManager(backupConfigFilePath);
+        }
+        public void Reset_BackupStorageConfigFile()
+        {
+
+        }
+        public bool Backup_SelectedItem(int index)
+        {
+            this.Backup_Item(this.backupConfigManager.backupConfig.files[index]);
+
+            return true;
+        }
+        public void Backup_Item(string item)
+        {
+            string currentDir = Directory.GetCurrentDirectory();
+
+            string time = DateTime.Now.ToString("yyyy-MM-dd HH_mm_ss");
+            Directory.SetCurrentDirectory(this.configManager.config.backupStoragePath);
+            Directory.CreateDirectory(time);
+            Directory.SetCurrentDirectory(this.configManager.config.backupStoragePath + "\\" + time);
+
+            string path;
+            if (item.StartsWith("file: "))
+            {
+                path = item.Substring(6);
+                if (File.Exists(path))
+                {
+                    this.Backup_File(path);
+                }
+                else
+                {
+                    MessageBox.Show("文件 '" + path + "' 不存在", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else if (item.StartsWith("dir: "))
+            {
+                path = item.Substring(5);
+                if (Directory.Exists(path))
+                {
+                    this.Backup_Dir(path);
+                }
+                else
+                {
+                    MessageBox.Show("文件夹 '" + path + "' 不存在", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                path = item;
+                MessageBox.Show("未知类型的条目 '" + path + "'", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            Directory.SetCurrentDirectory(currentDir);
+        }
+        private void Backup_File(string path)
+        {
+            string currentDir = Directory.GetCurrentDirectory();
+
+            string rootDir = path.Substring(0, 1);
+            Directory.CreateDirectory(rootDir);
+            Directory.SetCurrentDirectory(rootDir);
+            string? tempDirName = Path.GetDirectoryName(path);
+            if (tempDirName != null)
+            {
+                string dir = tempDirName.Substring(3);
+                Directory.CreateDirectory(dir);
+                File.Copy(path, dir + "\\" + Path.GetFileName(path));
+            }
+            else
+            {
+                MessageBox.Show("路径 '" + path + "' 格式错误, 需要绝对路径", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            Directory.SetCurrentDirectory(currentDir);
+        }
+        private void Backup_Dir(string path)
+        {
+            string currentDir = Directory.GetCurrentDirectory();
+
+            foreach (string file in Directory.GetFiles(path))
+            {
+                this.Backup_File(file);
+            }
+            foreach (string dir in Directory.GetDirectories(path))
+            {
+                this.Backup_Dir(dir);
+            }
+
+            Directory.SetCurrentDirectory(currentDir);
         }
     }
     public class BackupConfigManager : ConfigManagerInterface
     {
-        private string configFilePath;
-        public BackupConfig backupConfig = new BackupConfig();
+        private readonly string configFilePath;
+        public BackupConfig backupConfig;
         public BackupConfigManager(string configFilePath)
         {
             this.configFilePath = configFilePath;
+            this.backupConfig = new BackupConfig();
+
             this.Load_ConfigFile();
             this.Check_And_Init_Config();
         }
@@ -99,98 +188,49 @@ namespace EasyBackup
             this.Update_ConfigFile();
         }
     }
-    public class BackupManager
+    public class BackupStorageConfigManager : ConfigManagerInterface
     {
-        public ConfigManager configManager;
-        public BackupConfigManager backupConfigManager;
-        public BackupManager(string configFilePath, string backupConfigFilePath)
+        private string configFilePath;
+        public BackupStorageConfig backupStorageConfig;
+        public BackupStorageConfigManager(string configFilePath)
         {
-            this.configManager = new ConfigManager(configFilePath);
-            this.backupConfigManager = new BackupConfigManager(backupConfigFilePath);
+            this.configFilePath = configFilePath;
+            this.backupStorageConfig = new BackupStorageConfig();
         }
-        public bool Backup_SelectedItem(int index)
+        public void Check_And_Init_Config()
         {
-            this.Backup_Item(this.backupConfigManager.backupConfig.files[index]);
-
-            return true;
         }
-        public void Backup_Item(string item)
+
+        public void Create_ConfigFile()
         {
-            string currentDir = Directory.GetCurrentDirectory();
-
-            string time = DateTime.Now.ToString("yyyy-MM-dd HH_mm_ss");
-            Directory.SetCurrentDirectory(this.configManager.config.backupStoragePath);
-            Directory.CreateDirectory(time);
-            Directory.SetCurrentDirectory(this.configManager.config.backupStoragePath + "\\" + time);
-
-            string path;
-            if (item.StartsWith("file: "))
-            {
-                path = item.Substring(6);
-                if (File.Exists(path))
-                {
-                    this.Backup_File(path);
-                }
-                else
-                {
-                    MessageBox.Show("文件 '" + path + "' 不存在", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else if (item.StartsWith("dir: "))
-            {
-                path = item.Substring(5);
-                if (Directory.Exists(path))
-                {
-                    this.Backup_Dir(path);
-                }
-                else
-                {
-                    MessageBox.Show("文件夹 '" + path + "' 不存在", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                path = item;
-                MessageBox.Show("未知类型的条目 '" + path + "'", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            Directory.SetCurrentDirectory(currentDir);
         }
-        private void Backup_File(string path)
+
+        public void Load_ConfigFile()
         {
-            string currentDir = Directory.GetCurrentDirectory();
-
-            string rootDir = path.Substring(0, 1);
-            Directory.CreateDirectory(rootDir);
-            Directory.SetCurrentDirectory(rootDir);
-            string? tempDirName = Path.GetDirectoryName(path);
-            if (tempDirName != null)
-            {
-                string dir = tempDirName.Substring(3);
-                Directory.CreateDirectory(dir);
-                File.Copy(path, dir+"\\"+Path.GetFileName(path));
-            }
-            else
-            {
-                MessageBox.Show("路径 '" + path + "' 格式错误, 需要绝对路径", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            Directory.SetCurrentDirectory(currentDir);
         }
-        private void Backup_Dir(string path)
+
+        public void Reset_ConfigFile()
         {
-            string currentDir = Directory.GetCurrentDirectory();
+        }
 
-            foreach (string file in Directory.GetFiles(path))
-            {
-                this.Backup_File(file);
-            }
-            foreach (string dir in Directory.GetDirectories(path))
-            {
-                this.Backup_Dir(dir);
-            }
-
-            Directory.SetCurrentDirectory(currentDir);
+        public void Update_ConfigFile()
+        {
+        }
+    }
+    public class BackupConfig
+    {
+        public List<string> files { get; set; }
+        public BackupConfig()
+        {
+            this.files = [];
+        }
+    }
+    public class BackupStorageConfig
+    {
+        public Dictionary<string, List<string>> backups { get; set; }
+        public BackupStorageConfig()
+        {
+            this.backups = [];
         }
     }
 }

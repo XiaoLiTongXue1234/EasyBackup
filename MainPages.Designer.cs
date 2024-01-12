@@ -53,9 +53,21 @@
             othersPanel = new Panel();
             othersLabel0 = new Label();
             about = new Button();
+            backupManagerPanel = new Panel();
+            backupManagerStatusLabel = new Label();
+            backupManagerProcessLable = new Label();
+            label3 = new Label();
+            progressBar1 = new ProgressBar();
+            label4 = new Label();
+            button1 = new Button();
+            button2 = new Button();
+            backupsListBox = new ListBox();
+            backupManagerLabel0 = new Label();
+            backupManagerButton = new Button();
             homePanel.SuspendLayout();
             settingsPanel.SuspendLayout();
             othersPanel.SuspendLayout();
+            backupManagerPanel.SuspendLayout();
             SuspendLayout();
             // 
             // home
@@ -120,9 +132,9 @@
             homeLabel1.Font = new Font("Microsoft YaHei UI", 10.5F, FontStyle.Regular, GraphicsUnit.Point, 134);
             homeLabel1.Location = new Point(15, 37);
             homeLabel1.Name = "homeLabel1";
-            homeLabel1.Size = new Size(65, 20);
+            homeLabel1.Size = new Size(79, 20);
             homeLabel1.TabIndex = 10;
-            homeLabel1.Text = "备份列表";
+            homeLabel1.Text = "备份项列表";
             // 
             // backupSelectedItemButton
             // 
@@ -198,7 +210,7 @@
             // 
             // settings
             // 
-            settings.Location = new Point(3, 46);
+            settings.Location = new Point(4, 82);
             settings.Name = "settings";
             settings.Size = new Size(90, 30);
             settings.TabIndex = 2;
@@ -280,7 +292,7 @@
             // 
             // others
             // 
-            others.Location = new Point(3, 82);
+            others.Location = new Point(3, 118);
             others.Name = "others";
             others.Size = new Size(90, 30);
             others.TabIndex = 4;
@@ -318,15 +330,131 @@
             about.UseVisualStyleBackColor = true;
             about.Click += about_Click;
             // 
+            // backupManagerPanel
+            // 
+            backupManagerPanel.BackColor = Color.White;
+            backupManagerPanel.Controls.Add(backupManagerStatusLabel);
+            backupManagerPanel.Controls.Add(backupManagerProcessLable);
+            backupManagerPanel.Controls.Add(label3);
+            backupManagerPanel.Controls.Add(progressBar1);
+            backupManagerPanel.Controls.Add(label4);
+            backupManagerPanel.Controls.Add(button1);
+            backupManagerPanel.Controls.Add(button2);
+            backupManagerPanel.Controls.Add(backupsListBox);
+            backupManagerPanel.Controls.Add(backupManagerLabel0);
+            backupManagerPanel.Location = new Point(100, 10);
+            backupManagerPanel.Name = "backupManagerPanel";
+            backupManagerPanel.Size = new Size(690, 430);
+            backupManagerPanel.TabIndex = 14;
+            // 
+            // backupManagerStatusLabel
+            // 
+            backupManagerStatusLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            backupManagerStatusLabel.AutoSize = true;
+            backupManagerStatusLabel.Location = new Point(643, 407);
+            backupManagerStatusLabel.Name = "backupManagerStatusLabel";
+            backupManagerStatusLabel.Size = new Size(32, 17);
+            backupManagerStatusLabel.TabIndex = 14;
+            backupManagerStatusLabel.Text = "完成";
+            backupManagerStatusLabel.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // backupManagerProcessLable
+            // 
+            backupManagerProcessLable.AutoSize = true;
+            backupManagerProcessLable.Location = new Point(14, 407);
+            backupManagerProcessLable.Name = "backupManagerProcessLable";
+            backupManagerProcessLable.Size = new Size(108, 17);
+            backupManagerProcessLable.TabIndex = 13;
+            backupManagerProcessLable.Text = "正在恢复条目 ''......";
+            // 
+            // label3
+            // 
+            label3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label3.AutoSize = true;
+            label3.Location = new Point(1133, 405);
+            label3.Name = "label3";
+            label3.Size = new Size(32, 17);
+            label3.TabIndex = 12;
+            label3.Text = "完成";
+            label3.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // progressBar1
+            // 
+            progressBar1.Location = new Point(15, 382);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(660, 20);
+            progressBar1.TabIndex = 11;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Microsoft YaHei UI", 10.5F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            label4.Location = new Point(15, 37);
+            label4.Name = "label4";
+            label4.Size = new Size(65, 20);
+            label4.TabIndex = 10;
+            label4.Text = "备份列表";
+            // 
+            // button1
+            // 
+            button1.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            button1.Location = new Point(124, 338);
+            button1.Name = "button1";
+            button1.Size = new Size(103, 38);
+            button1.TabIndex = 9;
+            button1.Text = "删除所选项";
+            button1.UseVisualStyleBackColor = true;
+            // 
+            // button2
+            // 
+            button2.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            button2.Location = new Point(15, 338);
+            button2.Name = "button2";
+            button2.Size = new Size(103, 38);
+            button2.TabIndex = 8;
+            button2.Text = "恢复所选项";
+            button2.UseVisualStyleBackColor = true;
+            // 
+            // backupsListBox
+            // 
+            backupsListBox.FormattingEnabled = true;
+            backupsListBox.ItemHeight = 17;
+            backupsListBox.Location = new Point(15, 61);
+            backupsListBox.Name = "backupsListBox";
+            backupsListBox.Size = new Size(444, 276);
+            backupsListBox.TabIndex = 4;
+            // 
+            // backupManagerLabel0
+            // 
+            backupManagerLabel0.AutoSize = true;
+            backupManagerLabel0.Font = new Font("Microsoft YaHei UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            backupManagerLabel0.Location = new Point(5, 5);
+            backupManagerLabel0.Name = "backupManagerLabel0";
+            backupManagerLabel0.Size = new Size(88, 26);
+            backupManagerLabel0.TabIndex = 3;
+            backupManagerLabel0.Text = "备份管理";
+            // 
+            // backupManagerButton
+            // 
+            backupManagerButton.Location = new Point(4, 46);
+            backupManagerButton.Name = "backupManagerButton";
+            backupManagerButton.Size = new Size(90, 30);
+            backupManagerButton.TabIndex = 5;
+            backupManagerButton.Text = "备份管理";
+            backupManagerButton.UseVisualStyleBackColor = true;
+            backupManagerButton.Click += backupManagerButton_Click;
+            // 
             // MainPages
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(home);
+            Controls.Add(backupManagerButton);
             Controls.Add(settings);
-            Controls.Add(homePanel);
             Controls.Add(others);
+            Controls.Add(homePanel);
+            Controls.Add(backupManagerPanel);
             Controls.Add(settingsPanel);
             Controls.Add(othersPanel);
             Name = "MainPages";
@@ -338,6 +466,8 @@
             settingsPanel.PerformLayout();
             othersPanel.ResumeLayout(false);
             othersPanel.PerformLayout();
+            backupManagerPanel.ResumeLayout(false);
+            backupManagerPanel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -369,5 +499,16 @@
         private ProgressBar homeProgressBar;
         private Label homeStatusLabel;
         private Label homeProcessLable;
+        private Panel backupManagerPanel;
+        private Label backupManagerProcessLable;
+        private Label label3;
+        private ProgressBar progressBar1;
+        private Label label4;
+        private Button button1;
+        private ListBox backupsListBox;
+        private Label backupManagerLabel0;
+        private Button backupManagerButton;
+        private Button button2;
+        private Label backupManagerStatusLabel;
     }
 }
