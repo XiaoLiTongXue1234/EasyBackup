@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace EasyBackup
 {
@@ -103,11 +104,19 @@ namespace EasyBackup
 
             Directory.SetCurrentDirectory(currentDir);
         }
-        public void Recovery_File(string itemName,string file)
+        public void Recovery_File(string itemName, string file)
         {
             string rootDir = file[..1];
             string path = file[3..];
+            if (File.Exists(file))
+                File.Delete(file);
+
             File.Copy(this.configManager.config.backupStoragePath + "\\" + itemName + "\\" + rootDir + "\\" + path, file);
+        }
+        public void Delete_Backup(string name)
+        {
+            Directory.Delete(this.configManager.config.backupStoragePath + "\\" + name, true);
+            this.backupStorageConfigManager.Delete_Item(name);
         }
     }
     public class BackupConfigManager : ConfigManagerInterface
@@ -254,7 +263,8 @@ namespace EasyBackup
         }
         public void Add_Backup(string time)
         {
-            this.backupStorageConfig.backups.Add(time, []);
+            if (!this.backupStorageConfig.backups.ContainsKey(time))
+                this.backupStorageConfig.backups.Add(time, []);
 
             this.Update_ConfigFile();
         }
@@ -275,6 +285,12 @@ namespace EasyBackup
                 }
                 this.backupStorageConfig.backups[time].Add(file);
             }
+
+            this.Update_ConfigFile();
+        }
+        public void Delete_Item(string itemName)
+        {
+            this.backupStorageConfig.backups.Remove(itemName);
 
             this.Update_ConfigFile();
         }

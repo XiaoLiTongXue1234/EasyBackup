@@ -224,7 +224,7 @@ namespace EasyBackup
                 string? itemString = item.ToString();
                 if (itemString != null)
                 {
-                    this.backupManagerProcessLable.Text = "正在备份条目 '" + this.backupManager.backupConfigManager.backupConfig.files[this.backupFilesListBox.SelectedIndex] + "'...";
+                    this.backupManagerProcessLable.Text = "正在恢复条目 '" + itemString + "'...";
                     this.backupManagerProgressBar.Minimum = 0;
                     this.backupManagerProgressBar.Maximum = this.backupManager.backupStorageConfigManager.backupStorageConfig.backups[itemString].ToArray().Length;
                     this.backupManagerProgressBar.Value = 0;
@@ -232,16 +232,16 @@ namespace EasyBackup
 
                     foreach (string file in this.backupManager.backupStorageConfigManager.backupStorageConfig.backups[itemString])
                     {
-                        this.backupManager.Recovery_File(itemString,file);
+                        this.backupManager.Recovery_File(itemString, file);
 
                         this.backupManagerProgressBar.PerformStep();
                     }
 
-                    MessageBox.Show("备份成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("恢复成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    this.backupManagerProcessLable.Text = "正在备份条目 'Unknown'...";
+                    this.backupManagerProcessLable.Text = "正在恢复条目 'Unknown'...";
                     this.backupManagerProgressBar.Minimum = 0;
                     this.backupManagerProgressBar.Maximum = 1;
                     this.backupManagerProgressBar.Value = 0;
@@ -254,7 +254,7 @@ namespace EasyBackup
             }
             else
             {
-                this.backupManagerProcessLable.Text = "正在备份条目 'Unknown'...";
+                this.backupManagerProcessLable.Text = "正在恢复条目 'Unknown'...";
                 this.backupManagerProgressBar.Minimum = 0;
                 this.backupManagerProgressBar.Maximum = 1;
                 this.backupManagerProgressBar.Value = 0;
@@ -268,7 +268,50 @@ namespace EasyBackup
 
         private void deleteSelectedBackupButton_Click(object sender, EventArgs e)
         {
+            object? item = this.backupsListBox.SelectedItem;
+            if (item != null)
+            {
+                string? itemString = item.ToString();
+                if (itemString != null)
+                {
+                    this.backupManagerProcessLable.Text = "正在删除条目 '" + itemString + "'...";
+                    this.backupManagerProgressBar.Minimum = 0;
+                    this.backupManagerProgressBar.Maximum = 1;
+                    this.backupManagerProgressBar.Value = 0;
+                    this.backupManagerProgressBar.Step = 1;
 
+                    this.backupManager.Delete_Backup(itemString);
+
+                    this.backupManagerProgressBar.PerformStep();
+
+                    MessageBox.Show("删除成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    this.backupManagerProcessLable.Text = "正在删除条目 'Unknown'...";
+                    this.backupManagerProgressBar.Minimum = 0;
+                    this.backupManagerProgressBar.Maximum = 1;
+                    this.backupManagerProgressBar.Value = 0;
+                    this.backupManagerProgressBar.Step = 1;
+
+                    this.backupManagerProgressBar.PerformStep();
+
+                    MessageBox.Show("itemString为空", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                this.backupManagerProcessLable.Text = "正在删除条目 'Unknown'...";
+                this.backupManagerProgressBar.Minimum = 0;
+                this.backupManagerProgressBar.Maximum = 1;
+                this.backupManagerProgressBar.Value = 0;
+                this.backupManagerProgressBar.Step = 1;
+
+                this.backupManagerProgressBar.PerformStep();
+
+                MessageBox.Show("item为空", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            this.Reload_backupsListBox();
         }
     }
 }
